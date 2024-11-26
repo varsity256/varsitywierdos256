@@ -1,0 +1,382 @@
+DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>varsity256</title>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <style>
+    /* Popup styles */
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden; /* Hidden by default */
+}
+
+.popup-message {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.popup-message h2 {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+.popup-message p {
+  margin: 15px 0;
+}
+
+.close-btn {
+  background-color: blue;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* Body styles */
+body {
+  background-color: #f0f0f0;
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+     body {
+      background-color: #f0f0f0; /* Light grey background */
+      color: black; /* Black font color */
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif; /* Default body font */
+      display: flex;
+      flex-direction: column;
+      height: 100vh; /* Full height */
+    }
+
+    h1.website-title {
+      font-family: 'MedievalSharp', sans-serif; /* Gothic Font */
+      text-align: center; /* Center align the text */
+      padding: 15px; /* Add padding */
+      background-color: #f0f0f0; /* Same light grey as body */
+      color: black; /* Black text color */
+      font-size: 1.5rem; /* Adjust font size */
+      margin: 0;
+      border-bottom: 2px solid #ddd; /* Subtle border */
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      z-index: 10; /* Stay on top */
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f9f9f9;
+    }
+    #message-input {
+      display: flex;
+      padding: 10px;
+      background: #fff;
+    }
+    #message-input input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    #message-input button {
+      padding: 10px 15px;
+      font-size: 16px;
+      color: #fff;
+      background: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #message-input button:hover {
+      background: #0056b3;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      background: #e1e1e1;
+    }
+  </style>
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Varsity256 Chat</title>
+  <style>
+    body {
+      font-family: "Gothic", sans-serif;
+      background-color: lightgrey;
+      color: black;
+    }
+    h2, h3 {
+      text-align: center;
+    }
+    #authContainer, #chatContainer {
+      margin: 20px auto;
+      max-width: 600px;
+      padding: 20px;
+      border: 1px solid black;
+      border-radius: 10px;
+      background: white;
+    }
+    input {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 1em;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: grey;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sign-Up and Login Section -->
+  <div id="authContainer">
+    <h2>User Authentication</h2>
+
+    <!-- Sign-Up Section -->
+    <div id="signupForm">
+      <h3>Sign Up</h3>
+      <input type="text" id="signupUsername" placeholder="Enter Username" />
+      <input type="password" id="signupPassword" placeholder="Enter Password" />
+      <button id="signupButton">Sign Up</button>
+    </div>
+
+    <!-- Login Section -->
+    <div id="loginForm">
+      <h3>Login</h3>
+      <input type="text" id="loginUsername" placeholder="Enter Username" />
+      <input type="password" id="loginPassword" placeholder="Enter Password" />
+      <button id="loginButton">Login</button>
+    </div>
+  </div>
+
+  <!-- Chat Room Section -->
+  <div id="chatContainer" style="display: none;">
+    <h2>Welcome to Varsity256 Chat Room</h2>
+    <button id="logoutButton">Logout</button>
+    <!-- Existing chat UI (e.g., messages and input) -->
+    <div id="messagesContainer"></div>
+    <input type="text" id="messageInput" placeholder="Type a message" />
+    <button id="sendMessageButton">Send</button>
+  </div>
+
+  <!-- Firebase Integration Script -->
+  <script type="module">
+    /* Add the Firebase and JavaScript logic provided earlier here */
+  </script>
+</body>
+</html>
+
+  <!-- Popup Message -->
+<div id="popupContainer" class="popup-container">
+  <div class="popup-message">
+    <h2>Varsity256 is here🤩🤩</h2>
+    <p>>>Now you can share wild campus  and other stories 🤪🤪🤪🐐🐐<p>
+     <p> >>Ask for advice on any topic and matter💡💡</p>
+    <p>>>Confess your deepest darkest secrets 💀💀</p>
+     <p> >>Connect with different like minded individuals(hook ups😏😏)</p>
+     <p> >>Read and comment on different posts 📖🤓</p>
+      <p>>>Genarally do or say anything you want</p>
+
+</p>All with out compromising your identity because here we value “ANONYMITY” more than any thing else.🏴‍☠️🏴‍☠️🔏🔏</p>
+    <button class="close-btn" id="closePopupBtn">Close</button>
+  </div>
+</div>
+
+  <header>
+    <h1 class="website-title">Varsity256</h1>
+  </header>
+
+  <div id="chat"></div>
+
+  <div id="message-input">
+    <input type="text" id="message" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <!-- Firebase Initialization Script -->
+  <script type="module">
+    // Import the functions you need from the SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAGou8Hjzbn0tuERFJRzz2clh4RV8YNxa8",
+      authDomain: "campus-chat-ug.firebaseapp.com",
+      databaseURL: "https://campus-chat-ug-default-rtdb.firebaseio.com",
+      projectId: "campus-chat-ug",
+      storageBucket: "campus-chat-ug.firebasestorage.app",
+      messagingSenderId: "491732385072",
+      appId: "1:491732385072:web:068991b9e62c3d41399cf5",
+      measurementId: "G-D6RCCB5RW7"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth();
+
+    // Authenticate user anonymously
+    signInAnonymously(auth).catch(error => {
+      console.error("Authentication failed:", error.message);
+    });
+
+    // DOM elements
+    const chat = document.getElementById('chat');
+    const messageInput = document.getElementById('message');
+
+    // Listen for new messages
+    const messagesRef = ref(db, 'messages');
+    onChildAdded(messagesRef, snapshot => {
+      const messageData = snapshot.val();
+      const messageElement = document.createElement('div');
+      messageElement.className = 'message';
+      messageElement.innerText = messageData.text;
+      chat.appendChild(messageElement);
+      chat.scrollTop = chat.scrollHeight; // Auto-scroll
+    });
+
+    // Send a message
+    window.sendMessage = function () {
+      const message = messageInput.value.trim();
+      if (message) {
+        push(messagesRef, { text: message });
+        messageInput.value = '';
+      }
+    };
+ // Display the popup when the page loads
+window.onload = function() {
+  document.getElementById("popupContainer").style.visibility = "visible";
+};
+
+// Close the popup when the "Close" button is clicked
+document.getElementById("closePopupBtn").addEventListener("click", function() {
+  document.getElementById("popupContainer").style.visibility = "hidden";
+});
+  
+
+  // Sign-Up Function
+  const signupButton = document.getElementById("signupButton");
+  signupButton.addEventListener("click", async () => {
+    const username = document.getElementById("signupUsername").value.trim();
+    const password = document.getElementById("signupPassword").value;
+
+    if (!username || !password) {
+      alert("Please enter both a username and password.");
+      return;
+    }
+
+    // Check if the username already exists
+    const userRef = ref(database, `users/${username}`);
+    const snapshot = await get(userRef);
+
+    if (snapshot.exists()) {
+      alert("Username already exists. Please choose another.");
+    } else {
+      // Save the new user's credentials in the database
+      set(userRef, { password });
+      alert("User registered successfully!");
+      document.getElementById("signupForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+    }
+  });
+
+  // Login Function
+  const loginButton = document.getElementById("loginButton");
+  loginButton.addEventListener("click", async () => {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    if (!username || !password) {
+      alert("Please enter both your username and password.");
+      return;
+    }
+
+    // Check if the username exists and the password matches
+    const userRef = ref(database, `users/${username}`);
+    const snapshot = await get(userRef);
+
+    if (snapshot.exists()) {
+      const userData = snapshot.val();
+      if (userData.password === password) {
+        alert("Login successful!");
+        localStorage.setItem("loggedInUser", username); // Save session
+        document.getElementById("authContainer").style.display = "none";
+        document.getElementById("chatContainer").style.display = "block";
+      } else {
+        alert("Incorrect password.");
+      }
+    } else {
+      alert("Username not found.");
+    }
+  });
+
+  // Logout Function
+  const logoutButton = document.getElementById("logoutButton");
+  logoutButton.addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser"); // Clear session
+    alert("You have been logged out.");
+    location.reload(); // Reload to show login/signup forms
+  });
+
+  // Auto-login if a session exists
+  window.onload = () => {
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (loggedInUser) {
+      document.getElementById("authContainer").style.display = "none";
+      document.getElementById("chatContainer").style.display = "block";
+    }
+  };
+
+  </script>
+
+</body>
+</html>
