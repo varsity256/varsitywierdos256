@@ -3,8 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anonymous Chat Room</title>
-  <style>
+  <title>varsity256</title>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <!-- Add this <style> block to your <head> or CSS file -->
+<style>
+  body {
+    background-color: #f0f0f0; /* Light grey background */
+    color: black; /* Black font color */
+    margin: 0;
+    padding: 0;
+  }
+
+  h1.website-title {
+    font-family: 'MedievalSharp', sans-serif; /* Gothic Font */
+    text-align: center; /* Center the text */
+    padding: 20px;
+    background-color: #f0f0f0; /* Same light grey as body */
+    color: black; /* Black text color */
+    font-size: 3rem; /* Adjust size */
+    margin: 0;
+    border-bottom: 2px solid #ddd; /* Optional subtle border */
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 10; /* Stay on top */
+  }
+</style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -53,7 +80,9 @@
   </style>
 </head>
 <body>
-
+<header>
+  <h1 class="website-title">Varsity256</h1>
+</header>
   <div id="chat"></div>
 
   <div id="message-input">
