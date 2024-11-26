@@ -6,6 +6,55 @@
   <title>varsity256</title>
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <style>
+    /* Popup styles */
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden; /* Hidden by default */
+}
+
+.popup-message {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.popup-message h2 {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+.popup-message p {
+  margin: 15px 0;
+}
+
+.close-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* Body styles */
+body {
+  background-color: #f0f0f0;
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
      body {
       background-color: #f0f0f0; /* Light grey background */
       color: black; /* Black font color */
@@ -82,6 +131,15 @@
   </style>
 </head>
 <body>
+  <!-- Popup Message -->
+<div id="popupContainer" class="popup-container">
+  <div class="popup-message">
+    <h2>Welcome to Varsity256!</h2>
+    <p>This is a simple chat room where you can communicate with others anonymously.</p>
+    <button class="close-btn" id="closePopupBtn">Close</button>
+  </div>
+</div>
+
   <header>
     <h1 class="website-title">Varsity256</h1>
   </header>
@@ -145,6 +203,15 @@
         messageInput.value = '';
       }
     };
+ // Display the popup when the page loads
+window.onload = function() {
+  document.getElementById("popupContainer").style.visibility = "visible";
+};
+
+// Close the popup when the "Close" button is clicked
+document.getElementById("closePopupBtn").addEventListener("click", function() {
+  document.getElementById("popupContainer").style.visibility = "hidden";
+});
   </script>
 
 </body>
