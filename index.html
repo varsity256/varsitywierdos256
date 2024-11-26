@@ -131,6 +131,88 @@ body {
   </style>
 </head>
 <body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Varsity256 Chat</title>
+  <style>
+    body {
+      font-family: "Gothic", sans-serif;
+      background-color: lightgrey;
+      color: black;
+    }
+    h2, h3 {
+      text-align: center;
+    }
+    #authContainer, #chatContainer {
+      margin: 20px auto;
+      max-width: 600px;
+      padding: 20px;
+      border: 1px solid black;
+      border-radius: 10px;
+      background: white;
+    }
+    input {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 1em;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: grey;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sign-Up and Login Section -->
+  <div id="authContainer">
+    <h2>User Authentication</h2>
+
+    <!-- Sign-Up Section -->
+    <div id="signupForm">
+      <h3>Sign Up</h3>
+      <input type="text" id="signupUsername" placeholder="Enter Username" />
+      <input type="password" id="signupPassword" placeholder="Enter Password" />
+      <button id="signupButton">Sign Up</button>
+    </div>
+
+    <!-- Login Section -->
+    <div id="loginForm">
+      <h3>Login</h3>
+      <input type="text" id="loginUsername" placeholder="Enter Username" />
+      <input type="password" id="loginPassword" placeholder="Enter Password" />
+      <button id="loginButton">Login</button>
+    </div>
+  </div>
+
+  <!-- Chat Room Section -->
+  <div id="chatContainer" style="display: none;">
+    <h2>Welcome to Varsity256 Chat Room</h2>
+    <button id="logoutButton">Logout</button>
+    <!-- Existing chat UI (e.g., messages and input) -->
+    <div id="messagesContainer"></div>
+    <input type="text" id="messageInput" placeholder="Type a message" />
+    <button id="sendMessageButton">Send</button>
+  </div>
+
+  <!-- Firebase Integration Script -->
+  <script type="module">
+    /* Add the Firebase and JavaScript logic provided earlier here */
+  </script>
+</body>
+</html>
+
   <!-- Popup Message -->
 <div id="popupContainer" class="popup-container">
   <div class="popup-message">
@@ -219,6 +301,81 @@ window.onload = function() {
 document.getElementById("closePopupBtn").addEventListener("click", function() {
   document.getElementById("popupContainer").style.visibility = "hidden";
 });
+  
+
+  // Sign-Up Function
+  const signupButton = document.getElementById("signupButton");
+  signupButton.addEventListener("click", async () => {
+    const username = document.getElementById("signupUsername").value.trim();
+    const password = document.getElementById("signupPassword").value;
+
+    if (!username || !password) {
+      alert("Please enter both a username and password.");
+      return;
+    }
+
+    // Check if the username already exists
+    const userRef = ref(database, `users/${username}`);
+    const snapshot = await get(userRef);
+
+    if (snapshot.exists()) {
+      alert("Username already exists. Please choose another.");
+    } else {
+      // Save the new user's credentials in the database
+      set(userRef, { password });
+      alert("User registered successfully!");
+      document.getElementById("signupForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+    }
+  });
+
+  // Login Function
+  const loginButton = document.getElementById("loginButton");
+  loginButton.addEventListener("click", async () => {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    if (!username || !password) {
+      alert("Please enter both your username and password.");
+      return;
+    }
+
+    // Check if the username exists and the password matches
+    const userRef = ref(database, `users/${username}`);
+    const snapshot = await get(userRef);
+
+    if (snapshot.exists()) {
+      const userData = snapshot.val();
+      if (userData.password === password) {
+        alert("Login successful!");
+        localStorage.setItem("loggedInUser", username); // Save session
+        document.getElementById("authContainer").style.display = "none";
+        document.getElementById("chatContainer").style.display = "block";
+      } else {
+        alert("Incorrect password.");
+      }
+    } else {
+      alert("Username not found.");
+    }
+  });
+
+  // Logout Function
+  const logoutButton = document.getElementById("logoutButton");
+  logoutButton.addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser"); // Clear session
+    alert("You have been logged out.");
+    location.reload(); // Reload to show login/signup forms
+  });
+
+  // Auto-login if a session exists
+  window.onload = () => {
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (loggedInUser) {
+      document.getElementById("authContainer").style.display = "none";
+      document.getElementById("chatContainer").style.display = "block";
+    }
+  };
+
   </script>
 
 </body>
