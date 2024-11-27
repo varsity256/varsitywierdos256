@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Chatroom</title>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGou8Hjzbn0tuERFJRzz2clh4RV8YNxa8",
+            authDomain: "campus-chat-ug.firebaseapp.com",
+            databaseURL: "https://campus-chat-ug-default-rtdb.firebaseio.com",
+            projectId: "campus-chat-ug",
+            storageBucket: "campus-chat-ug.firebasestorage.app",
+            messagingSenderId: "491732385072",
+            appId: "1:491732385072:web:068991b9e62c3d41399cf5",
+            measurementId: "G-D6RCCB5RW7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        let username = '';
+        let currentChatType = 'public'; // 'public' or 'private'
+        let privateRecipient = '';
+
+        // Create account (Sign Up)
+        function createAccount() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            if (!user || !pass) {
+                alert("Please enter both username and password.");
+                return;
+            }
+
+            // Check if username already exists
+            const userRef = ref(database, 'users/' + user);
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert("Username already taken.");
+                } else {
+                    // Hash the password (use a basic method like btoa for this demo, although better hashing methods are recommended for production)
+                    const hashedPassword = btoa(pass);
+                    // Store the user and hashed password in Firebase Realtime Database
+                    set(ref(database, 'users/' + user), {
+                        username: user,
+                        password: hashedPassword
+                    });
+                    alert("Account created successfully! Please log in.");
+                }
+            });
+        }
+
+        // Log In
+        function logIn() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            if (!user || !pass) {
+                alert("Please enter both username and password.");
+                return;
+            }
+
+            // Check username and password
+            const userRef = ref(database, 'users/' + user);
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    // Compare the hashed password
+                    const hashedPassword = btoa(pass); // Hash the input password
+                    if (userData.password === hashedPassword) {
+                        alert("Login successful!");
+                        username = user;
+                        document.getElementById('authArea').style.display = 'none';
+                        document.getElementById('chatArea').style.display = 'block';
+                        fetchPublicMessages();
+                    } else {
+                        alert("Incorrect password.");
+                    }
+                } else {
+                    alert("Username not found. Please sign up first.");
+                }
+            });
+        }
+
+        function fetchPublicMessages() {
+            currentChatType = 'public';
+            document.getElementById('messages').innerHTML = '';
+            const messagesRef = ref(database, 'messages/public');
+            get(messagesRef).then((snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const messageData = childSnapshot.val();
+                    const { user, message } = messageData;
+                    addMessage(user, message);
+                });
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (message) {
+                if (currentChatType === 'public') {
+                    const messagesRef = ref(database, 'messages/public');
+                    set(messagesRef, {
+                        user: username,
+                        message: message,
+                        timestamp: Date.now()
+                    });
+                } else if (currentChatType === 'private') {
+                    const userPair = [username, privateRecipient].sort().join('_');
+                    const messagesRef = ref(database, 'messages/private/' + userPair);
+                    set(messagesRef, {
+                        from: username,
+                        message: message,
+                        timestamp: Date.now()
+                    });
+                }
+                input.value = '';
+            }
+        }
+
+        function addMessage(user, message) {
+            const messageBox = document.getElementById('messages');
+            messageBox.innerHTML += `<div><strong>${user}:</strong> ${message}</div>`;
+            messageBox.scrollTop = messageBox.scrollHeight;
+        }
+
+    </script>
+</head>
+<body>
+    <header>Modern Chatroom</header>
+    <div class="container">
+        <div id="authArea" class="signup">
+            <h3>Login or Create Account</h3>
+            <input type="text" id="username" placeholder="Username" />
+            <input type="password" id="password" placeholder="Password" />
+            <button onclick="logIn()">Login</button>
+            <button onclick="createAccount()">Sign Up</button>
+        </div>
+        <div id="chatArea" style="display: none;">
+            <div class="chat-type">
+                <button onclick="fetchPublicMessages()">Public Chat</button>
+                <button onclick="startPrivateChat()">Private Chat</button>
+            </div>
+            <div class="message-box" id="messages"></div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Type a message..." />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
