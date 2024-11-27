@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Chatroom</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #000;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 1.5rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .container {
+            max-width: 800px;
+            margin: 6rem auto 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+        }
+        .message-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 0.5rem;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            background-color: #f1f1f1;
+        }
+        .input-area {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #333;
+        }
+        .input-area button {
+            background-color: #000;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .input-area button:hover {
+            background-color: #333;
+        }
+        .signup {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .signup input {
+            margin: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 200px;
+        }
+        .signup button {
+            margin: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            background-color: #000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 200px;
+        }
+        .signup button:hover {
+            background-color: #333;
+        }
+        .chat-type {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .chat-type button {
+            margin: 0 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            background-color: #000;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .chat-type button:hover {
+            background-color: #333;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            header {
+                font-size: 1.2rem;
+                padding: 0.75rem;
+            }
+            .container {
+                margin: 5rem 1rem 0;
+                padding: 1rem;
+            }
+            .signup input,
+            .signup button {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+            .input-area input {
+                padding: 0.5rem;
+            }
+            .input-area button {
+                padding: 0.5rem 1rem;
+                width: 100%;
+            }
+            .message-box {
+                height: 250px;
+            }
+            .chat-type button {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>Modern Chatroom</header>
+    <div class="container">
+        <div id="authArea" class="signup">
+            <h3>Login or Create Account</h3>
+            <input type="text" id="username" placeholder="Username" />
+            <input type="password" id="password" placeholder="Password" />
+            <button onclick="logIn()">Login</button>
+            <button onclick="createAccount()">Sign Up</button>
+        </div>
+        <div id="chatArea" style="display: none;">
+            <div class="chat-type">
+                <button onclick="fetchPublicMessages()">Public Chat</button>
+                <button onclick="startPrivateChat()">Private Chat</button>
+            </div>
+            <div class="message-box" id="messages"></div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Type a message..." />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
+            databaseURL: "YOUR_FIREBASE_DATABASE_URL",
+            projectId: "YOUR_FIREBASE_PROJECT_ID",
+            storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
+            appId: "YOUR_FIREBASE_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let username = '';
+        let currentChatType = 'public'; // 'public' or 'private'
+        let privateRecipient = '';
+
+        function createAccount() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            if (!user || !pass) {
+                alert("Please enter both username and password.");
+                return;
+            }
+
+            firebase.database().ref('users/' + user).get().then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert("Username already taken.");
+                } else {
+                    const hashedPassword = btoa(pass);
+                    firebase.database().ref('users/' + user).set({ password: hashedPassword });
+                    alert("Account created successfully! Please log in.");
+                }
+            });
+        }
+
+        function logIn() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            if (!user || !pass) {
+                alert("Please enter both username and password.");
+                return;
+            }
+
+            firebase.database().ref('users/' + user).get().then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const hashedPassword = btoa(pass);
+
+                    if (userData.password === hashedPassword) {
+                        alert("Login successful!");
+                        username = user;
+                        document.getElementById('authArea').style.display = 'none';
+                        document.getElementById('chatArea').style.display = 'block';
+                        fetchPublicMessages();
+                    } else {
+                        alert("Incorrect password.");
+                    }
+                } else {
+                    alert("Username not found. Please sign up first.");
+                }
+            });
+        }
+
+        function fetchPublicMessages() {
+            currentChatType = 'public';
+            document.getElementById('messages').innerHTML = '';
+            firebase.database().ref('messages/public').on('child_added', (snapshot) => {
+                const { user, message } = snapshot.val();
+                addMessage(user, message);
+            });
+        }
+
+        function startPrivateChat() {
+            const recipient = prompt("Enter the username of the person you'd like to chat with:");
+            if (recipient && recipient !== username) {
+                currentChatType = 'private';
+                privateRecipient = recipient;
+                document.getElementById('messages').innerHTML = '';
+                const userPair = [username, recipient].sort().join('_');
+                firebase.database().ref('messages/private/' + userPair).on('child_added', (snapshot) => {
+                    const { from, message } = snapshot.val();
+                    addMessage(from, message);
+                });
+            } else {
+                alert("Invalid recipient.");
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (message) {
+                if (currentChatType === 'public') {
+                    firebase.database().ref('messages/public').push({ user: username, message, timestamp: Date.now() });
+                } else if (currentChatType === 'private') {
+                    const userPair = [username, privateRecipient].sort().join('_');
+                    firebase.database().ref('messages/private/' + userPair).push({ from: username, message, timestamp: Date.now() });
+                }
+                input.value = '';
+            }
+        }
+
+        function addMessage(user, message) {
+            const messageBox = document.getElementById('messages');
+            messageBox.innerHTML += `<div><strong>${user}:</strong> ${message}</div>`;
+            messageBox.scrollTop = messageBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
