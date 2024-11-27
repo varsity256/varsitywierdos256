@@ -32,13 +32,16 @@
       z-index: 1000;
     }
 
-    /* Chat Container */
-    .chat-container {
-      margin-top: 60px; /* Height of the header */
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-    }
+/* Chat Container */
+.chat-container {
+  position: fixed;
+  top: 60px; /* Space below the header */
+  bottom: 60px; /* Space above the send message container */
+  overflow-y: auto; /* Allow scrolling within the chat */
+  width: 100%;
+  padding: 20px;
+  background: #f4f4f9;
+}
 
     .message {
       background: #fff;
