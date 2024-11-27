@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anonymous Chatroom</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f4f9;
+      height: 100vh;
+    }
+
+    /* Fixed Header */
+    .header {
+      background: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    /* Chat Container */
+    .chat-container {
+      position: fixed;
+      top: 60px; /* Space below the header */
+      bottom: 60px; /* Space above the send message container */
+      overflow-y: auto; /* Allow scrolling within the chat */
+      width: 100%;
+      padding: 20px;
+      background: #f4f4f9;
+    }
+
+    .message {
+      background: #fff;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      max-width: 70%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .message.user {
+      margin-left: auto;
+      background: #d1f5d3;
+    }
+
+    /* Send Message Container */
+    .send-container {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      padding: 10px;
+      background: #fff;
+      border-top: 1px solid #ccc;
+    }
+
+    .send-container input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .send-container button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-left: 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .send-container button:hover {
+      background: #45a049;
+    }
+
+    /* Pop-up Message */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      z-index: 2000;
+      text-align: center;
+    }
+
+    .popup button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">Anonymous Chatroom</div>
+
+  <!-- Chat Container -->
+  <div class="chat-container" id="chatContainer">
+    <!-- Messages will appear here -->
+  </div>
+
+  <!-- Send Message Container -->
+  <div class="send-container">
+    <input type="text" id="messageInput" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <!-- Pop-up Message -->
+  <div class="popup" id="popup">
+    <p>Your message has been sent!</p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+
+  <script>
+    const chatContainer = document.getElementById('chatContainer');
+    const messageInput = document.getElementById('messageInput');
+    const popup = document.getElementById('popup');
+
+    // Function to send a message
+    function sendMessage() {
+      const messageText = messageInput.value.trim();
+      if (messageText) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', 'user');
+        messageElement.textContent = messageText;
+
+        chatContainer.appendChild(messageElement);
+        chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+        messageInput.value = '';
+
+        showPopup(); // Show the pop-up
+      }
+    }
+
+    // Function to show the pop-up
+    function showPopup() {
+      popup.style.display = 'block';
+    }
+
+    // Function to close the pop-up
+    function closePopup() {
+      popup.style.display = 'none';
+    }
+  </script>
+</body>
+</html>
