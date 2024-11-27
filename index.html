@@ -163,18 +163,20 @@
     <script>
         // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY",
-            authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
-            databaseURL: "YOUR_FIREBASE_DATABASE_URL",
-            projectId: "YOUR_FIREBASE_PROJECT_ID",
-            storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
-            appId: "YOUR_FIREBASE_APP_ID"
+  apikey: "AIzaSyAGou8Hjzbn0tuERFJRzz2clh4RV8YNxa8",
+  authDomain: "campus-chat-ug.firebaseapp.com",
+  databaseURL: "https://campus-chat-ug-default-rtdb.firebaseio.com",
+  projectId: "campus-chat-ug",
+  storageBucket: "campus-chat-ug.firebasestorage.app",
+  messagingSenderId: "491732385072",
+  appId: "1:491732385072:web:068991b9e62c3d41399cf5",
+  measurementId: "G-D6RCCB5RW7"
         };
 
         // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
 
         let username = '';
         let currentChatType = 'public'; // 'public' or 'private'
