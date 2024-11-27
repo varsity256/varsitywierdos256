@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anonymous Chatroom</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f4f9;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* Fixed Header */
+    .header {
+      background: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    /* Chat Container */
+    .chat-container {
+      margin-top: 60px; /* Height of the header */
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .message {
+      background: #fff;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      max-width: 70%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .message.user {
+      margin-left: auto;
+      background: #d1f5d3;
+    }
+
+    /* Send Message Container */
+    .send-container {
+      display: flex;
+      padding: 10px;
+      background: #fff;
+      border-top: 1px solid #ccc;
+    }
+
+    .send-container input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .send-container button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-left: 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .send-container button:hover {
+      background: #45a049;
+    }
+
+    /* Pop-up Message */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      z-index: 2000;
+      text-align: center;
+    }
+
+    .popup button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">Anonymous Chatroom</div>
+
+  <!-- Chat Container -->
+  <div class="chat-container" id="chatContainer">
+    <!-- Messages will appear here -->
+  </div>
+
+  <!-- Send Message Container -->
+  <div class="send-container">
+    <input type="text" id="messageInput" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <!-- Pop-up Message -->
+  <div class="popup" id="popup">
+    <p>Your message has been sent!</p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+
+  <script>
+    // Firebase Configuration (replace with your actual config)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      databaseURL: "YOUR_DATABASE_URL"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let userId;
+
+    // Anonymous User Sign-In
+    auth.signInAnonymously()
+      .then(userCredential => {
+        userId = userCredential.user.uid;
+        console.log("Signed in as anonymous user:", userId);
+      })
+      .catch(error => console.error("Error during sign-in:", error));
+
+    const chatContainer = document.getElementById('chatContainer');
+    const messageInput = document.getElementById('messageInput');
+    const popup = document.getElementById('popup');
+
+    // Function to send a message to Firebase
+    function sendMessage() {
+      const messageText = messageInput.value.trim();
+      if (messageText) {
+        const messageData = {
+          userId: userId,
+          text: messageText,
+          timestamp: Date.now(),
+        };
+
+        // Push message to Firebase Realtime Database
+        db.ref("messages").push(messageData);
+        messageInput.value = ""; // Clear the input field
+      }
+    }
+
+    // Listen for new messages from Firebase
+    db.ref("messages").on("child_added", snapshot => {
+      const message = snapshot.val();
+
+      // Add the message to the chat container
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('message');
+      if (message.userId === userId) {
+        messageElement.classList.add('user'); // Style differently for the current user
+      }
+      messageElement.textContent = message.text;
+      chatContainer.appendChild(messageElement);
+      chatContainer.scrollTop = chatContainer.scrollHeight; // Auto-scroll to the bottom
+    });
+
+    // Function to show the pop-up
+    function showPopup() {
+      popup.style.display = 'block';
+    }
+
+    // Function to close the pop-up
+    function closePopup() {
+      popup.style.display = 'none';
+    }
+  </script>
+</body>
+</html>
